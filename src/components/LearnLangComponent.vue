@@ -12,7 +12,7 @@
         label="選擇類別"
         emit-value
         map-options
-        class="col-12 col-sm-3"
+        class="col-12 col-sm-12"
       />
 
       <!-- 搜尋框 -->
