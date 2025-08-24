@@ -113,26 +113,25 @@
 import { ref, computed, onMounted, reactive } from 'vue';
 import type { Sentence, Category } from 'src/types/lang';
 
+// Google Sheet ID
+const sheetId = '149dfY9afgxVuETZx_uCucP17r7Z3czRJofeL0lG-WFo';
+
+// GSheet 型別
+type GSheetCell = { v?: string | number | null };
+type GSheetRow = { c: GSheetCell[] };
+type GSheetData = { table: { rows: GSheetRow[] } };
+
+// Vue State
 const categories = ref<Category[]>([]);
 const sentences = ref<Sentence[]>([]);
 const search = ref<string>('');
 const mode = ref<'list' | 'card'>('list');
-
-// 初始化資料
-onMounted(async () => {
-  const [catRes, senRes] = await Promise.all([
-    fetch('/data/categories.json'),
-    fetch('/data/sentences.json'),
-  ]);
-  const catData: Category[] = await catRes.json();
-  // 在最前面加上「全部」
-  categories.value = [{ id: '', label: '全部' }, ...catData];
-  sentences.value = await senRes.json();
-});
-
-// 預設值 = 全部 (id = '')
 const category = ref<string>('');
+const flippedCards = reactive<{ [key: number]: boolean }>({});
+const speaking = ref<{ sentenceId: number; lang: 'zh' | 'idn' } | null>(null);
+let utterance: SpeechSynthesisUtterance | null = null;
 
+// 過濾句子
 const filteredSentences = computed<Sentence[]>(() =>
   sentences.value.filter(
     (s) =>
@@ -141,32 +140,25 @@ const filteredSentences = computed<Sentence[]>(() =>
   ),
 );
 
+// 切換模式
 function toggleMode(): void {
   mode.value = mode.value === 'list' ? 'card' : 'list';
 }
 
-// ===== 循環播放控制 =====
-const speaking = ref<{ sentenceId: number; lang: 'zh' | 'idn' } | null>(null);
-let utterance: SpeechSynthesisUtterance | null = null;
-
+// 語音播放
 function toggleVoice(s: Sentence, lang: 'zh' | 'idn') {
-  // 如果已經在播放同一句同語言，停止播放
   if (speaking.value?.sentenceId === s.id && speaking.value.lang === lang) {
     speechSynthesis.cancel();
     speaking.value = null;
     utterance = null;
     return;
   }
-
-  // 停掉其他播放
   if (utterance) speechSynthesis.cancel();
 
   const text = lang === 'zh' ? s.zh : s.idn;
-
   utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = lang === 'zh' ? 'zh-TW' : 'id-ID';
 
-  // 循環播放
   utterance.onend = () => {
     if (speaking.value?.sentenceId === s.id && speaking.value.lang === lang) {
       speechSynthesis.speak(utterance!);
@@ -181,10 +173,8 @@ function isSpeaking(sentenceId: number, lang: 'zh' | 'idn') {
   return speaking.value?.sentenceId === sentenceId && speaking.value.lang === lang;
 }
 
-const flippedCards = reactive<{ [key: number]: boolean }>({});
-
+// 卡片翻面
 function toggleFlip(id: number) {
-  // 翻面時停止播放
   if (speaking.value) {
     speechSynthesis.cancel();
     speaking.value = null;
@@ -192,6 +182,37 @@ function toggleFlip(id: number) {
   }
   flippedCards[id] = !flippedCards[id];
 }
+
+// 初始化資料
+onMounted(async () => {
+  // categories
+  const catRes = await fetch(
+    `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=categories`,
+  );
+  let catText = await catRes.text();
+  catText = catText.substring(47, catText.length - 2);
+  const catDataRaw = (JSON.parse(catText) as GSheetData).table.rows;
+  const catData: Category[] = catDataRaw.map((row: GSheetRow) => ({
+    id: row.c[0]?.v?.toString() ?? '',
+    label: row.c[1]?.v?.toString() ?? '',
+  }));
+  categories.value = [{ id: '', label: '全部' }, ...catData];
+
+  // sentences
+  const senRes = await fetch(
+    `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:json&sheet=sentences`,
+  );
+  let senText = await senRes.text();
+  senText = senText.substring(47, senText.length - 2);
+  const senDataRaw = (JSON.parse(senText) as GSheetData).table.rows;
+  sentences.value = senDataRaw.map((row: GSheetRow, index: number) => ({
+    id: Number(row.c[0]?.v ?? index),
+    category: row.c[1]?.v?.toString() ?? '',
+    zh: row.c[2]?.v?.toString() ?? '',
+    en: row.c[3]?.v?.toString() ?? '',
+    idn: row.c[4]?.v?.toString() ?? '',
+  }));
+});
 </script>
 
 <style scoped>
