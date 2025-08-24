@@ -1,6 +1,7 @@
 <template>
   <q-page class="q-pa-md">
-    <div class="row q-gutter-md items-center">
+    <!-- 上方控制列 -->
+    <div class="row q-col-gutter-md q-mb-md">
       <!-- 類別選擇 -->
       <q-select
         filled
@@ -11,17 +12,21 @@
         label="選擇類別"
         emit-value
         map-options
+        class="col-12 col-sm-3"
       />
 
       <!-- 搜尋框 -->
-      <q-input filled v-model="search" label="搜尋句子" debounce="300" class="col" />
+      <q-input filled v-model="search" label="搜尋句子" debounce="300" class="col-12 col-sm" />
 
       <!-- 模式切換 -->
-      <q-btn
-        color="primary"
-        @click="toggleMode"
-        :label="mode === 'list' ? '切換卡片模式' : '切換清單模式'"
-      />
+      <div class="col-12 col-sm-auto">
+        <q-btn
+          color="primary"
+          class="full-width"
+          @click="toggleMode"
+          :label="mode === 'list' ? '切換卡片模式' : '切換清單模式'"
+        />
+      </div>
     </div>
 
     <!-- 清單模式 -->
