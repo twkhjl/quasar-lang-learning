@@ -22,9 +22,10 @@
       <div class="col-12 col-sm-auto">
         <q-btn
           color="primary"
-          class="full-width"
+          round
+          dense
           @click="toggleMode"
-          :label="mode === 'list' ? '切換卡片模式' : '切換清單模式'"
+          :icon="mode === 'list' ? 'view_module' : 'view_list'"
         />
       </div>
     </div>
@@ -48,7 +49,7 @@
 
           <!-- 印尼文：左文右鈕 -->
           <div class="row items-center justify-between">
-            <q-item-label class="text-h5 text-grey">{{ s.idn }}</q-item-label>
+            <q-item-label class="text-h5">{{ s.idn }}</q-item-label>
             <q-btn
               flat
               :round="!isSpeaking(s.id, 'idn')"
@@ -70,7 +71,7 @@
           <!-- 正面 -->
           <div class="flip-card-front q-card-section">
             <div class="row items-center justify-between">
-              <div class="text-h5 text-grey">{{ s.idn }}</div>
+              <div class="text-h5">{{ s.idn }}</div>
               <q-btn
                 flat
                 :round="!isSpeaking(s.id, 'idn')"
