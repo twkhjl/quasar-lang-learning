@@ -64,41 +64,52 @@
 
     <!-- 卡片模式 -->
     <div v-else class="row q-col-gutter-md q-mt-md">
-      <q-card v-for="s in filteredSentences" :key="s.id" class="col-12 col-sm-6 col-md-4 q-pa-md">
-        <q-card-section>
-          <!-- 中文 -->
-          <div class="row items-center justify-between q-mb-md">
-            <div class="text-h5">{{ s.zh }}</div>
-            <q-btn
-              flat
-              :round="!isSpeaking(s.id, 'zh')"
-              size="lg"
-              :icon="isSpeaking(s.id, 'zh') ? 'stop' : 'volume_up'"
-              :color="isSpeaking(s.id, 'zh') ? 'red' : 'black'"
-              @click="toggleVoice(s, 'zh')"
-            />
+      <q-card v-for="s in filteredSentences" :key="s.id" class="col-12 q-pa-md">
+        <!-- 內部內容維持翻面 + 語音按鈕 -->
+        <div class="flip-card" :class="{ flipped: flippedCards[s.id] }">
+          <!-- 正面 -->
+          <div class="flip-card-front q-card-section">
+            <div class="row items-center justify-between">
+              <div class="text-h5 text-grey">{{ s.idn }}</div>
+              <q-btn
+                flat
+                :round="!isSpeaking(s.id, 'idn')"
+                size="lg"
+                :icon="isSpeaking(s.id, 'idn') ? 'stop' : 'volume_up'"
+                :color="isSpeaking(s.id, 'idn') ? 'red' : 'black'"
+                @click.stop="toggleVoice(s, 'idn')"
+              />
+            </div>
+            <div class="row justify-center q-mt-md">
+              <q-btn flat round dense icon="autorenew" color="primary" @click="toggleFlip(s.id)" />
+            </div>
           </div>
 
-          <!-- 印尼文 -->
-          <div class="row items-center justify-between">
-            <div class="text-h5 text-grey">{{ s.idn }}</div>
-            <q-btn
-              flat
-              :round="!isSpeaking(s.id, 'idn')"
-              size="lg"
-              :icon="isSpeaking(s.id, 'idn') ? 'stop' : 'volume_up'"
-              :color="isSpeaking(s.id, 'idn') ? 'red' : 'black'"
-              @click="toggleVoice(s, 'idn')"
-            />
+          <!-- 背面 -->
+          <div class="flip-card-back q-card-section">
+            <div class="row items-center justify-between">
+              <div class="text-h5">{{ s.zh }}</div>
+              <q-btn
+                flat
+                :round="!isSpeaking(s.id, 'zh')"
+                size="lg"
+                :icon="isSpeaking(s.id, 'zh') ? 'stop' : 'volume_up'"
+                :color="isSpeaking(s.id, 'zh') ? 'red' : 'black'"
+                @click.stop="toggleVoice(s, 'zh')"
+              />
+            </div>
+            <div class="row justify-center q-mt-md">
+              <q-btn flat round dense icon="autorenew" color="primary" @click="toggleFlip(s.id)" />
+            </div>
           </div>
-        </q-card-section>
+        </div>
       </q-card>
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, reactive } from 'vue';
 import type { Sentence, Category } from 'src/types/lang';
 
 const categories = ref<Category[]>([]);
@@ -168,6 +179,18 @@ function toggleVoice(s: Sentence, lang: 'zh' | 'idn') {
 function isSpeaking(sentenceId: number, lang: 'zh' | 'idn') {
   return speaking.value?.sentenceId === sentenceId && speaking.value.lang === lang;
 }
+
+const flippedCards = reactive<{ [key: number]: boolean }>({});
+
+function toggleFlip(id: number) {
+  // 翻面時停止播放
+  if (speaking.value) {
+    speechSynthesis.cancel();
+    speaking.value = null;
+    utterance = null;
+  }
+  flippedCards[id] = !flippedCards[id];
+}
 </script>
 
 <style scoped>
@@ -178,5 +201,43 @@ function isSpeaking(sentenceId: number, lang: 'zh' | 'idn') {
   background: white;
   /* 可加 box-shadow 增加浮起感 */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.flip-card {
+  perspective: 1000px;
+  position: relative;
+  width: 100%;
+  height: 150px; /* 可調整卡片高度 */
+}
+
+.flip-card-front,
+.flip-card-back {
+  backface-visibility: hidden;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.flip-card-front {
+  background-color: #ffffff;
+  z-index: 2;
+}
+
+.flip-card-back {
+  background-color: #f5f5f5;
+  transform: rotateY(180deg);
+  z-index: 1;
+}
+
+.flip-card.flipped .flip-card-front {
+  transform: rotateY(180deg);
+}
+
+.flip-card.flipped .flip-card-back {
+  transform: rotateY(0deg);
 }
 </style>
