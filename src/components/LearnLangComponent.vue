@@ -192,9 +192,12 @@ onMounted(async () => {
   let catText = await catRes.text();
   catText = catText.substring(47, catText.length - 2);
   const catDataRaw = (JSON.parse(catText) as GSheetData).table.rows;
-  const catData: Category[] = catDataRaw.map((row: GSheetRow) => ({
+
+  // skip first row (header)
+  const catDataRows = catDataRaw.slice(1);
+  const catData: Category[] = catDataRows.map((row: GSheetRow) => ({
     id: row.c[0]?.v?.toString() ?? '',
-    label: row.c[1]?.v?.toString() ?? '',
+    label: `${row.c[2]?.v?.toString() ?? ''} / ${row.c[3]?.v?.toString() ?? ''}`, // zh / idn
   }));
   categories.value = [{ id: '', label: '全部' }, ...catData];
 
