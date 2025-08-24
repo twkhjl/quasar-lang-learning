@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-md">
     <!-- 上方控制列 -->
-    <div class="row q-col-gutter-md q-mb-md">
+    <div class="row q-col-gutter-md q-mb-md sticky-header">
       <!-- 類別選擇 -->
       <q-select
         filled
@@ -169,3 +169,14 @@ function isSpeaking(sentenceId: number, lang: 'zh' | 'idn') {
   return speaking.value?.sentenceId === sentenceId && speaking.value.lang === lang;
 }
 </script>
+
+<style scoped>
+.sticky-header {
+  position: sticky;
+  top: 50px;
+  z-index: 10;
+  background: white;
+  /* 可加 box-shadow 增加浮起感 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+</style>
