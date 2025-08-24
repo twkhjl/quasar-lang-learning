@@ -32,35 +32,44 @@
 
     <!-- 清單模式 -->
     <q-list v-if="mode === 'list'" bordered class="q-mt-md">
-      <q-item v-for="s in filteredSentences" :key="s.id" clickable v-ripple class="q-pa-sm">
-        <q-item-section class="col">
-          <!-- 中文：左文右鈕 -->
-          <div class="row items-center justify-between q-mb-md">
-            <q-item-label class="text-h5">{{ s.zh }}</q-item-label>
-            <q-btn
-              flat
-              :round="!isSpeaking(s.id, 'zh')"
-              size="lg"
-              :icon="isSpeaking(s.id, 'zh') ? 'stop' : 'volume_up'"
-              :color="isSpeaking(s.id, 'zh') ? 'red' : 'black'"
-              @click.stop="toggleVoice(s, 'zh')"
-            />
-          </div>
+      <template v-for="(s, idx) in filteredSentences" :key="s.id">
+        <q-item clickable v-ripple class="q-pa-sm">
+          <q-item-section class="col">
+            <!-- 中文：左文右鈕 -->
+            <div class="row items-center justify-between q-mb-md">
+              <q-item-label class="text-h5">{{ s.zh }}</q-item-label>
+              <q-btn
+                flat
+                :round="!isSpeaking(s.id, 'zh')"
+                size="lg"
+                :icon="isSpeaking(s.id, 'zh') ? 'stop' : 'volume_up'"
+                :color="isSpeaking(s.id, 'zh') ? 'red' : 'black'"
+                @click.stop="toggleVoice(s, 'zh')"
+              />
+            </div>
 
-          <!-- 印尼文：左文右鈕 -->
-          <div class="row items-center justify-between">
-            <q-item-label class="text-h5">{{ s.idn }}</q-item-label>
-            <q-btn
-              flat
-              :round="!isSpeaking(s.id, 'idn')"
-              size="lg"
-              :icon="isSpeaking(s.id, 'idn') ? 'stop' : 'volume_up'"
-              :color="isSpeaking(s.id, 'idn') ? 'red' : 'black'"
-              @click.stop="toggleVoice(s, 'idn')"
-            />
-          </div>
-        </q-item-section>
-      </q-item>
+            <!-- 印尼文：左文右鈕 -->
+            <div class="row items-center justify-between">
+              <q-item-label class="text-h5">{{ s.idn }}</q-item-label>
+              <q-btn
+                flat
+                :round="!isSpeaking(s.id, 'idn')"
+                size="lg"
+                :icon="isSpeaking(s.id, 'idn') ? 'stop' : 'volume_up'"
+                :color="isSpeaking(s.id, 'idn') ? 'red' : 'black'"
+                @click.stop="toggleVoice(s, 'idn')"
+              />
+            </div>
+          </q-item-section>
+        </q-item>
+        <q-separator
+          v-if="idx < filteredSentences.length - 1"
+          dark
+          color="grey-7"
+          size="2px"
+          spaced
+        />
+      </template>
     </q-list>
 
     <!-- 卡片模式 -->
