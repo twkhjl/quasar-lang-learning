@@ -100,7 +100,6 @@ import type { Sentence, Category } from 'src/types/lang';
 
 const categories = ref<Category[]>([]);
 const sentences = ref<Sentence[]>([]);
-const category = ref<string>('');
 const search = ref<string>('');
 const mode = ref<'list' | 'card'>('list');
 
@@ -110,9 +109,14 @@ onMounted(async () => {
     fetch('/data/categories.json'),
     fetch('/data/sentences.json'),
   ]);
-  categories.value = await catRes.json();
+  const catData: Category[] = await catRes.json();
+  // 在最前面加上「全部」
+  categories.value = [{ id: '', label: '全部' }, ...catData];
   sentences.value = await senRes.json();
 });
+
+// 預設值 = 全部 (id = '')
+const category = ref<string>('');
 
 const filteredSentences = computed<Sentence[]>(() =>
   sentences.value.filter(
