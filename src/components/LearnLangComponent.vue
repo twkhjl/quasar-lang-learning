@@ -27,34 +27,32 @@
     <!-- 清單模式 -->
     <q-list v-if="mode === 'list'" bordered class="q-mt-md">
       <q-item v-for="s in filteredSentences" :key="s.id" clickable v-ripple class="q-pa-sm">
-        <!-- 中文與印尼文句子，中印間距加大 -->
         <q-item-section class="col">
-          <q-item-label class="text-h5 q-mb-md">{{ s.zh }}</q-item-label>
-          <q-item-label class="text-h5">{{ s.idn }}</q-item-label>
-        </q-item-section>
+          <!-- 中文：左文右鈕 -->
+          <div class="row items-center justify-between q-mb-md">
+            <q-item-label class="text-h5">{{ s.zh }}</q-item-label>
+            <q-btn
+              flat
+              :round="!isSpeaking(s.id, 'zh')"
+              size="lg"
+              :icon="isSpeaking(s.id, 'zh') ? 'stop' : 'volume_up'"
+              :color="isSpeaking(s.id, 'zh') ? 'red' : 'black'"
+              @click.stop="toggleVoice(s, 'zh')"
+            />
+          </div>
 
-        <!-- 喇叭圖示放右邊，中文與印尼文各自一個 -->
-        <q-item-section side class="justify-end">
-          <!-- 中文 -->
-          <q-btn
-            flat
-            :round="!isSpeaking(s.id, 'zh')"
-            size="lg"
-            :icon="isSpeaking(s.id, 'zh') ? 'stop' : 'volume_up'"
-            :color="isSpeaking(s.id, 'zh') ? 'red' : 'black'"
-            class="q-mr-sm"
-            @click="toggleVoice(s, 'zh')"
-          />
-
-          <!-- 印尼文 -->
-          <q-btn
-            flat
-            :round="!isSpeaking(s.id, 'idn')"
-            size="lg"
-            :icon="isSpeaking(s.id, 'idn') ? 'stop' : 'volume_up'"
-            :color="isSpeaking(s.id, 'idn') ? 'red' : 'black'"
-            @click="toggleVoice(s, 'idn')"
-          />
+          <!-- 印尼文：左文右鈕 -->
+          <div class="row items-center justify-between">
+            <q-item-label class="text-h5 text-grey">{{ s.idn }}</q-item-label>
+            <q-btn
+              flat
+              :round="!isSpeaking(s.id, 'idn')"
+              size="lg"
+              :icon="isSpeaking(s.id, 'idn') ? 'stop' : 'volume_up'"
+              :color="isSpeaking(s.id, 'idn') ? 'red' : 'black'"
+              @click.stop="toggleVoice(s, 'idn')"
+            />
+          </div>
         </q-item-section>
       </q-item>
     </q-list>
