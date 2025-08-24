@@ -145,7 +145,8 @@ const filteredSentences = computed<Sentence[]>(() =>
   sentences.value.filter(
     (s) =>
       (category.value === '' || s.category === category.value) &&
-      (s.zh.includes(search.value) || s.idn.includes(search.value)),
+      (s.zh.toLowerCase().includes(search.value.toLowerCase()) ||
+        s.idn.toLowerCase().includes(search.value.toLowerCase())),
   ),
 );
 
