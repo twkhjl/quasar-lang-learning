@@ -1,0 +1,5 @@
+[
+  { "id": "greeting", "label": "問候" },
+  { "id": "food", "label": "食物" },
+  { "id": "travel", "label": "旅行" }
+]

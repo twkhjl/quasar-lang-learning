@@ -1,0 +1,6 @@
+[
+  { "id": 1, "category": "greeting", "zh": "你好", "idn": "Halo" },
+  { "id": 2, "category": "greeting", "zh": "早安", "idn": "Selamat pagi" },
+  { "id": 3, "category": "food", "zh": "我想喝咖啡", "idn": "Saya mau kopi" },
+  { "id": 4, "category": "travel", "zh": "火車站在哪裡？", "idn": "Di mana stasiun kereta?" }
+]
