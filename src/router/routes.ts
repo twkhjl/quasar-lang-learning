@@ -1,17 +1,18 @@
 import type { RouteRecordRaw } from 'vue-router';
 
+import HomagePage from '@/pages/indexPage.vue';
+
 const routes: RouteRecordRaw[] = [
   {
     path: '/',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    component: HomagePage,
   },
 
   // Always leave this as last one,
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
-    component: () => import('pages/ErrorNotFound.vue'),
+    component: () => import('@/pages/errorNotFound.vue'),
   },
 ];
 
