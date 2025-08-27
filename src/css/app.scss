@@ -1,1 +1,25 @@
 // app global css in SCSS form
+
+:root {
+  --base-font: 'Microsoft Jhenghei', sans-serif;
+  --noto-sans-tc-font: 'Noto Sans TC', sans-serif;
+
+  --q-font-family: var(--base-font), 'Roboto', sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-size: 1rem;
+  font-weight: 400;
+  font-family: var(--q-font-family);
+  letter-spacing: 0;
+}
+
+.font-jhenghei {
+  font-family: var(--base-font);
+}

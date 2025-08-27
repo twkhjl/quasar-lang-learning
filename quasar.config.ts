@@ -15,7 +15,7 @@ export default defineConfig((ctx) => {
     boot: ['i18n', 'axios'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
-    css: ['app.scss'],
+    css: ['app.scss', 'tailwind.css'],
 
     // https://github.com/quasarframework/quasar/tree/dev/extras
     extras: [
@@ -26,7 +26,6 @@ export default defineConfig((ctx) => {
       // 'themify',
       // 'line-awesome',
       // 'roboto-font-latin-ext', // this or either 'roboto-font', NEVER both!
-
       'roboto-font', // optional, you are not bound to it
       'material-icons', // optional, you are not bound to it
     ],
@@ -38,13 +37,17 @@ export default defineConfig((ctx) => {
         node: 'node20',
       },
 
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+      },
+
       typescript: {
         strict: true,
         vueShim: true,
         // extendTsConfig (tsConfig) {}
       },
 
-      vueRouterMode: 'hash', // available values: 'hash', 'history'
+      vueRouterMode: 'history', // available values: 'hash', 'history'
       // vueRouterBase,
       // vueDevtools,
       // vueOptionsAPI: false,
@@ -66,6 +69,25 @@ export default defineConfig((ctx) => {
 
       vitePlugins: [
         [
+          'unplugin-auto-import/vite',
+          {
+            /* options */
+            imports: [
+              'vue',
+              'vue-router',
+              'pinia',
+              {
+                axios: [
+                  // default imports
+                  ['default', 'axios'], // import { default as axios } from 'axios',
+                ],
+              },
+            ],
+            dts: './src/auto-imports.d.ts',
+            viteOptimizeDeps: true,
+          },
+        ],
+        [
           '@intlify/unplugin-vue-i18n/vite',
           {
             // if you want to use Vue I18n Legacy API, you need to set `compositionOnly: false`
@@ -81,7 +103,6 @@ export default defineConfig((ctx) => {
             include: [fileURLToPath(new URL('./src/i18n', import.meta.url))],
           },
         ],
-
         [
           'vite-plugin-checker',
           {
@@ -99,7 +120,7 @@ export default defineConfig((ctx) => {
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#devserver
     devServer: {
       // https: true,
-      open: true, // opens browser window automatically
+      open: false, // opens browser window automatically
     },
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#framework
